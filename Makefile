@@ -30,6 +30,8 @@ else ifeq ($(PROFILE),dir-882-r1)
   $(eval $(call DefineProfile,dir-882,DIR-882-R1,.config,.config))
 else ifeq ($(PROFILE),dir-882-a1)
   $(eval $(call DefineProfile,dir-882,DIR-882-A1,.config,.config))
+else ifeq ($(PROFILE),wia3300-10)
+  $(eval $(call DefineProfile,wia3300-10,WIA3300-10,.config,.config))
 else
   $(error "Unknown PROFILE=$(PROFILE)")
 endif

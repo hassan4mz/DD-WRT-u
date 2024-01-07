@@ -9,7 +9,7 @@ on:
         default: 'HEAD'
       publish:
         description: 'publish build result to a release'
-        required: true
+        required: false
         type: boolean
 
 jobs:
@@ -17,7 +17,8 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        profile: [k2p-mt76, k2p-mini, k2p, dir-882-a1, dir-882-r1]
+        #profile: [k2p-mt76, k2p-mini, k2p, dir-882-a1, dir-882-r1]
+        profile: [wia3300-10]
     steps:
       - uses: actions/checkout@v3
       - uses: hendrikmuhs/ccache-action@v1.2
