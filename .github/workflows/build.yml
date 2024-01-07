@@ -6,7 +6,7 @@ on:
       revision:
         description: 'svn revision'
         required: true
-        default: 'HEAD'
+        default: 'r53879'
       publish:
         description: 'publish build result to a release'
         required: false
