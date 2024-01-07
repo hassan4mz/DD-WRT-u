@@ -18,7 +18,7 @@ jobs:
     strategy:
       matrix:
         #profile: [k2p-mt76, k2p-mini, k2p, dir-882-a1, dir-882-r1]
-        profile: [wia3300-10]
+        profile: [k2p]
     steps:
       - uses: actions/checkout@v3
       - uses: hendrikmuhs/ccache-action@v1.2
