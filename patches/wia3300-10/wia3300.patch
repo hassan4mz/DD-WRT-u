@@ -19,22 +19,28 @@ Index: src/router/libutils/libutils/gpio.c
  
  void set_gpio(int pin, int value)
  {
-+	if (pin == 13) {
-+		writeint("/sys/class/leds/red:status/brightness", value);
-+		writeint("/sys/class/leds/yellow:status/brightness", !value);
-+		writeint("/sys/class/leds/blue:status/brightness", 0);
++	if (pin == 3) {
++		writeint("/sys/class/leds/greed:status/brightness", value);
 +		return;
 +	}
-+	if (pin == 14) {
-+		writeint("/sys/class/leds/red:status/brightness", !value);
-+		writeint("/sys/class/leds/yellow:status/brightness", value);
-+		writeint("/sys/class/leds/blue:status/brightness", 0);
-+		return;
-+	}
-+	if (pin == 15) {
-+		writeint("/sys/class/leds/red:status/brightness", 0);
-+		writeint("/sys/class/leds/yellow:status/brightness", !value);
++	if (pin == 4) {
 +		writeint("/sys/class/leds/blue:status/brightness", value);
++		writeint("/sys/class/leds/greed:status/brightness", !value);
++		return;
++	}
++	if (pin == 22) {
++		writeint("/sys/class/leds/blue:status/brightness", !value);
++		writeint("/sys/class/leds/greed:status/brightness", value);
++		return;
++	}
++	if (pin == 23) {
++		writeint("/sys/class/leds/red:status/brightness", value);
++		writeint("/sys/class/leds/greed:status/brightness", !value);
++		return;
++	}
++	if (pin == 24) {
++		writeint("/sys/class/leds/red:status/brightness", !value);
++		writeint("/sys/class/leds/greed:status/brightness", value);
 +		return;
 +	}
 +
@@ -45,7 +51,9 @@ Index: src/router/libutils/libutils/gpio.c
  
  int get_gpio(int pin)
  {
-+	if (pin >= 13 && pin <= 15)
++	if (pin >= 3 && pin <= 4)
++		return 0;
++	if (pin >= 22 && pin <= 24)
 +		return 0;
 +
  	int value;
@@ -65,9 +73,9 @@ Index: src/router/libutils/libutils/ledconfig.c
 -		cfg->power_gpio = GPIO_LOW | 0x10;
 -		cfg->usb_gpio = GPIO_LOW | 0xc;
 -		cfg->usb_gpio1 = GPIO_LOW | 0xe;
-+		cfg->connected_gpio = 0xf;
-+		cfg->power_gpio = GPIO_LOW | 0xd;
-+		cfg->wlan_gpio = 0xe;
++		cfg->connected_gpio = 0x16;
++		cfg->power_gpio = GPIO_LOW | 0x18;
++		cfg->wlan_gpio = 0x3;
  		break;
  	case ROUTER_DIR860LB1:
  		cfg->power_gpio = GPIO_LOW | 0xf;
@@ -89,7 +97,7 @@ Index: src/router/rc/resetbutton.c
  		break;
  	case ROUTER_DIR882:
 -		val = (get_gpio(7) << 7) | (get_gpio(15) << 15);
-+		val = get_gpio(3) << 15;
++		val = get_gpio(18) << 15;
  		break;
  	case ROUTER_R6800:
  		val = (get_gpio(18) << 18) | (get_gpio(12) << 12) | (get_gpio(14) << 14);
