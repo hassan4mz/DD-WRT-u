@@ -7,11 +7,6 @@ on:
         description: 'svn revision'
         required: true
         default: 'r53879'
-      publish:
-        description: 'publish build result to a release'
-        required: false
-        type: boolean
-
 jobs:
   build:
     runs-on: ubuntu-22.04
@@ -20,7 +15,7 @@ jobs:
         #profile: [k2p-mt76, k2p-mini, k2p, dir-882-a1, dir-882-r1, msg1500, a040wq]
         profile: [wia3300-10]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: hendrikmuhs/ccache-action@v1.2
         with:
           key: ${{ matrix.profile }}
@@ -31,17 +26,12 @@ jobs:
             fakeroot kmod cpio bc zip git python3-docutils gettext gengetopt gtk-doc-tools \
             autoconf-archive automake autopoint meson texinfo build-essential help2man pkg-config \
             zlib1g-dev libgmp3-dev libmpc-dev libmpfr-dev libncurses5-dev libltdl-dev wget libc-dev-bin
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
           check-latest: true
       - name: Install npm packages
         run: sudo npm install -g uglify-js uglifycss
-      - uses: robinraju/release-downloader@v1.8
-        with:
-          repository: tsl0922/DD-WRT
-          tag: toolchain
-          fileName: toolchain-mipsel_24kc_gcc-13.1.0_musl.tar.gz
       - name: Extract toolchain
         run: tar zxf toolchain-mipsel_24kc_gcc-13.1.0_musl.tar.gz
       - name: Prepare
@@ -58,29 +48,3 @@ jobs:
         with:
           name: images
           path: images/*.bin
-  publish:
-    needs: [build]
-    runs-on: ubuntu-22.04
-    if: ${{ github.event_name == 'schedule' || inputs.publish }}
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/download-artifact@v3
-      - name: Set Tag Name
-        run: echo "TAG_ANME=$(date +%Y%m%d)" >> $GITHUB_ENV
-      - uses: rickstaa/action-create-tag@v1
-        with:
-          tag: ${{ env.TAG_ANME }}
-          force_push_tag: true
-      - uses: ncipollo/release-action@v1
-        with:
-          commit: ${{ github.sha }}
-          tag: ${{ env.TAG_ANME }}
-          artifacts: "images/*.bin"
-          allowUpdates: true
-      - uses: dev-drprasad/delete-older-releases@v0.2.1
-        with:
-          keep_latest: 7
-          delete_tags: true
-          delete_tag_pattern: "20"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
