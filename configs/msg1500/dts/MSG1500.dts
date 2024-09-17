@@ -77,7 +77,7 @@
 		};
 
 		partition@540000 {
-			label = "ubi";
+			label = "nvram";
 			reg = <0x540000 0x7A00000>;
 		};
 	};
