@@ -44,44 +44,53 @@
 	};
 };
 
-
 &nand {
-	status = "okay";
-
-	partitions {
-		compatible = "fixed-partitions";
-		#address-cells = <1>;
-		#size-cells = <1>;
-
-		partition@0 {
-			label = "u-boot";
-			reg = <0x0 0x80000>;
-			read-only;
-		};
-
-		partition@80000 {
-			label = "u-boot-env";
-			reg = <0x80000 0x80000>;
-			read-only;
-		};
-
-		factory: partition@100000 {
-			label = "factory";
-			reg = <0x100000 0x40000>;
-			read-only;
-		};
-
-		partition@140000 {
-			label = "kernel";
-			reg = <0x140000 0x400000>;
-		};
-
-		partition@540000 {
-			label = "nvram";
-			reg = <0x540000 0x7A00000>;
-		};
-	};
-};
+38	        status = "okay";
+39	
+40	        partitions {
+41	                compatible = "fixed-partitions";
+42	                #address-cells = <1>;
+43	                #size-cells = <1>;
+44	
+45	                partition@0 {
+46	                        label = "u-boot";
+47	                        reg = <0x0 0x100000>;
+48	                        read-only;
+49	                };
+50	
+51	                partition@100000 {
+52	                        label = "SC PID";
+53	                        reg = <0x100000 0x100000>;
+54	                        read-only;
+55	                };
+56	
+57	                partition@200000 {
+58	                        label = "linux";
+59	                        reg = <0x200000 0x2000000>;
+60	                };
+61	
+62	                partition@600000 {
+63	                        label = "ubi";
+64	                        reg = <0x600000 0x1c00000>;
+65	                };
+66	
+67	                partition@2f00000 {
+68	                        label = "nvram";
+69	                        reg = <0x2f00000 0x200000>;
+70	                };
+71	
+72	                factory: partition@2e00000 {
+73	                        label = "factory";
+74	                        reg = <0x2e00000 0x100000>;
+75	                        read-only;
+76	                };
+77	
+78	                partition@3100000 {
+79	                        label = "ddwrt";
+80	                        reg = <0x3100000 0x4f00000>;
+81	                };
+82	        };
+83	};
 
 &pcie {
 	status = "okay";
