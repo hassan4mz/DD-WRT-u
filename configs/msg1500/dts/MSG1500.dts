@@ -21,23 +21,13 @@
 	leds {
 		compatible = "gpio-leds";
 
-		wlan5g {
-			label = "sw5g";
-			gpios = <&gpio0 3 GPIO_ACTIVE_LOW>;
-			linux,default-trigger = "phy1radio";
-		};
-
+		
 		wlan2g {
 			label = "sw2g";
-			gpios = <&gpio0 4 GPIO_ACTIVE_LOW>;
+			gpios = <&gpio0 13 GPIO_ACTIVE_LOW>;
 			linux,default-trigger = "phy0radio";
 		};
 
-		usb {
-			label = "usb";
-			gpios = <&gpio0 13 GPIO_ACTIVE_LOW>;
-			linux,default-trigger = "usbport";
-		};
 	};
 
 	gpio-keys-polled {
@@ -48,7 +38,7 @@
 
 		reset {
 			label = "reset";
-			gpios = <&gpio0 18 GPIO_ACTIVE_LOW>;
+			gpios = <&gpio0 3 GPIO_ACTIVE_LOW>;
 			linux,code = <KEY_RESTART>;
 		};
 	};
@@ -58,51 +48,56 @@
 &nand {
 	status = "okay";
 
-	flash@0 {
-		reg = <0>;
-		nand-ecc-mode = "hw";
-		partitions {
-			compatible = "fixed-partitions";
-			#address-cells = <1>;
-			#size-cells = <1>;
+	partitions {
+		compatible = "fixed-partitions";
+		#address-cells = <1>;
+		#size-cells = <1>;
 
-			partition@0 {
-				label = "Bootloader";
-				reg = <0x0 0x80000>; /* 512k */
-			};
-						
-			partition@80000 {
-				label = "Config";
-				reg = <0x80000 0x80000>; /* 512k */
-			};
+		partition@0 {
+			label = "u-boot";
+			reg = <0x0 0x80000>;
+			read-only;
+		};
 
-			partition@100000 {
-				label = "Factory";
-				reg = <0x100000 0x40000>; /* 256k */
-			};
+		partition@80000 {
+			label = "u-boot-env";
+			reg = <0x80000 0x80000>;
+			read-only;
+		};
 
-			partition@140000 {
-				label = "firmware";
-				reg = <0x140000 0x1840000>; /* 24M */
-			};		
-			
-			partition@1980000 {
-				label = "Storage";
-				reg = <0x1980000 0x400000>; /* 4096K */
-			};
+		factory: partition@100000 {
+			label = "factory";
+			reg = <0x100000 0x40000>;
+			read-only;
+		};
 
-			partition@1d80000 {
-				label = "RWFS";
-				reg = <0x1d80000 0x6200000>;
-			};
+		partition@140000 {
+			label = "kernel";
+			reg = <0x140000 0x400000>;
+		};
 
-			partition@all {
-				label = "ALL";
-				reg = <0x0 0x7f80000>;
-			};
+		partition@540000 {
+			label = "ubi";
+			reg = <0x540000 0x7A00000>;
 		};
 	};
 };
+
+&pcie {
+	status = "okay";
+};
+
+&pcie0 {
+	mt76@0,0 {
+		reg = <0x0000 0 0 0 0>;
+		mediatek,mtd-eeprom = <&factory 0x0000>;
+		/*led {
+			led-sources = <3>;
+			led-active-low;
+		};*/
+	};
+};
+
 
 &raeth {
 	status = "okay";
@@ -117,10 +112,6 @@
 	gmac2_txq_num = <1>;
 	gmac2_txq_txd_num = <1024>;
 	num_rx_desc = <1024>;
-};
-
-&pcie {
-	status = "okay";
 };
 
 
