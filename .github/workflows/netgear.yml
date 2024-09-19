@@ -1,33 +1,32 @@
-name: netgear
+name: build-netg
 
 on: 
   workflow_dispatch:
     inputs:
-      publish:
-        description: 'publish build result to a release'
+      revision:
+        description: 'svn revision'
         required: true
-        type: boolean
-  
+        default: 'r53870'
 jobs:
   build:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        drv: [r6220]  # Change to the relevant driver for NETGEAR R6220
+        #profile: [k2p-mt76, k2p-mini, k2p, dir-882-a1, dir-882-r1, msg1500, a040wq]
+        profile: [r6220]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: hendrikmuhs/ccache-action@v1.2
         with:
-          append-timestamp: false
+          key: ${{ matrix.profile }}
       - name: Install packages
         run: |
           sudo apt update
           sudo apt install unzip libtool-bin ccache curl cmake gperf gawk flex bison nano xxd \
             fakeroot kmod cpio bc zip git python3-docutils gettext gengetopt gtk-doc-tools \
-            automake autopoint meson texinfo build-essential help2man pkg-config zlib1g-dev \
-            libgmp3-dev libmpc-dev libmpfr-dev libncurses5-dev libltdl-dev wget libc-dev-bin
-          sudo apt install uglifyjs npm && sudo npm install uglifycss
-       - uses: actions/setup-node@v4
+            autoconf-archive automake autopoint meson texinfo build-essential help2man pkg-config \
+            zlib1g-dev libgmp3-dev libmpc-dev libmpfr-dev libncurses5-dev libltdl-dev wget libc-dev-bin
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
           check-latest: true
