@@ -29,58 +29,25 @@ jobs:
             automake autopoint meson texinfo build-essential help2man pkg-config zlib1g-dev \
             libgmp3-dev libmpc-dev libmpfr-dev libncurses5-dev libltdl-dev wget libc-dev-bin
           sudo apt install uglifyjs npm && sudo npm install uglifycss
-      - uses: robinraju/release-downloader@v1.8
+       - uses: actions/setup-node@v4
         with:
-          tag: toolchain
-          fileName: toolchain-mipsel_24kc_gcc-13.1.0_musl.tar.gz
+          node-version: 18
+          check-latest: true
+      - name: Install npm packages
+        run: sudo npm install -g uglify-js uglifycss
       - name: Extract toolchain
         run: tar zxf toolchain-mipsel_24kc_gcc-13.1.0_musl.tar.gz
-      - name: Checkout
-        run: make checkout
       - name: Prepare
-        run: make prepare DRV=${{ matrix.drv }}
+        run: |
+          echo PROFILE=${{ matrix.profile }} > .config
+          echo REVISION=${{ github.event.inputs.revision }} >> .config
+          make checkout
+          make prepare
       - name: Configure
         run: make configure
-      - name: Build kernel
-        run: make kernel
-      - name: Build all
+      - name: Build
         run: make all
-      - name: Build image
-        run: make image
-      - name: Rename image
-        run: |
-          for f in images/*.bin; do
-            mv $f ${f/.bin/-r6220.bin}
-          done
-        env:
-          DRV: "${{ matrix.drv }}"
       - uses: actions/upload-artifact@v3
         with:
           name: images
           path: images/*.bin
-
-  publish:
-    needs: [build]
-    runs-on: ubuntu-22.04
-    if: ${{ github.event_name == 'schedule' || inputs.publish }}
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/download-artifact@v3
-      - name: Set Tag Name
-        run: echo "TAG_NAME=$(date +%Y%m%d)" >> $GITHUB_ENV
-      - uses: rickstaa/action-create-tag@v1
-        with:
-          tag: ${{ env.TAG_NAME }}
-          force_push_tag: true
-      - uses: ncipollo/release-action@v1
-        with:
-          commit: ${{ github.sha }}
-          tag: ${{ env.TAG_NAME }}
-          artifacts: "images/*.bin"
-          allowUpdates: true
-      - uses: dev-drprasad/delete-older-releases@v0.2.1
-        with:
-          keep_latest: 7
-          delete_tags: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
