@@ -1,4 +1,4 @@
-name: build-netg
+name: build-test
 
 on: 
   workflow_dispatch:
@@ -6,14 +6,19 @@ on:
       revision:
         description: 'svn revision'
         required: true
-        default: 'r53870'
+        default: 'r53879'
+      ssh:
+        description: 'SSH connection to Actions'
+        required: false
+        default: 'true'
 jobs:
   build:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
         #profile: [k2p-mt76, k2p-mini, k2p, dir-882-a1, dir-882-r1, msg1500, a040wq]
-        profile: [r6220]
+        profile: [msg1500]
+        timeout-minutes: 9999
     steps:
       - uses: actions/checkout@v4
       - uses: hendrikmuhs/ccache-action@v1.2
@@ -34,17 +39,9 @@ jobs:
         run: sudo npm install -g uglify-js uglifycss
       - name: Extract toolchain
         run: tar zxf toolchain-mipsel_24kc_gcc-13.1.0_musl.tar.gz
-      - name: Prepare
-        run: |
-          echo PROFILE=${{ matrix.profile }} > .config
-          echo REVISION=${{ github.event.inputs.revision }} >> .config
-          make checkout
-          make prepare
-      - name: Configure
-        run: make configure
-      - name: Build
-        run: make all
-      - uses: actions/upload-artifact@v3
-        with:
-          name: images
-          path: images/*.bin
+      - name: SSH connection to Actions
+        uses: P3TERX/ssh2actions@v1.0.0
+        if: (github.event.inputs.ssh == 'true' && github.event.inputs.ssh  != 'false') || contains(github.event.action, 'ssh')
+        env:
+         TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+         TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
