@@ -1,93 +1,95 @@
 /dts-v1/;
 
 #include "mt7621.dtsi"
-#include <dt-bindings/gpio/gpio.h>
 
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/input/input.h>
 
 / {
-	compatible = "netgear,r6220", "mediatek,mt7621-soc";
-	model = "Netgear R6220";
+	compatible = "raisecom,msg1500", "ralink,mt7621-soc";
+	model = "Raisecom MSG1500";
 
 	memory@0 {
 		device_type = "memory";
-		reg = <0x0 0x8000000>;
-	};
-	chosen {
-		bootargs = "console=ttyS0,57600";
+		reg = <0x0 0x10000000>;
 	};
 
-	leds: leds {
+	chosen {
+		bootargs = "console=ttyS0,115200";
+	};
+
+	leds {
 		compatible = "gpio-leds";
 
-		wifi {
-			gpios = <&gpio0 16 GPIO_ACTIVE_LOW>;
-			label = "green:wifi";
-			linux,default-trigger = "phy0tpt";
+		
+		wlan2g {
+			label = "sw2g";
+			gpios = <&gpio0 13 GPIO_ACTIVE_LOW>;
+			linux,default-trigger = "phy0radio";
+		};
+
+	};
+
+	gpio-keys-polled {
+		compatible = "gpio-keys-polled";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		poll-interval = <20>;
+
+		reset {
+			label = "reset";
+			gpios = <&gpio0 3 GPIO_ACTIVE_LOW>;
+			linux,code = <KEY_RESTART>;
 		};
 	};
-
-	reg_usb_vbus: regulator {
-		compatible = "regulator-fixed";
-		regulator-name = "usb_vbus";
-		regulator-min-microvolt = <5000000>;
-		regulator-max-microvolt = <5000000>;
-		gpio = <&gpio0 10 GPIO_ACTIVE_HIGH>;
-		enable-active-high;
-	};
-
 };
-
 
 &nand {
-	status = "okay";
-
-	partitions {
-		compatible = "fixed-partitions";
-		#address-cells = <1>;
-		#size-cells = <1>;
-
-		partition@0 {
-			label = "u-boot";
-			reg = <0x0 0x100000>;
-			read-only;
-		};
-
-		partition@100000 {
-			label = "SC PID";
-			reg = <0x100000 0x100000>;
-			read-only;
-		};
-
-		partition@200000 {
-			label = "linux";
-			reg = <0x200000 0x2000000>;
-		};
-
-		partition@600000 {
-			label = "ubi";
-			reg = <0x600000 0x1c00000>;
-		};
-
-		partition@2f00000 {
-			label = "nvram";
-			reg = <0x2f00000 0x200000>;
-		};
-
-		factory: partition@2e00000 {
-			label = "factory";
-			reg = <0x2e00000 0x100000>;
-			read-only;
-		};
-
-		partition@3100000 {
-			label = "ddwrt";
-			reg = <0x3100000 0x4f00000>;
-		};
-	};
-};
-
-&xhci {
-	vbus-supply = <&reg_usb_vbus>;
+	        status = "okay";
+	
+	        partitions {
+	                compatible = "fixed-partitions";
+	                #address-cells = <1>;
+	                #size-cells = <1>;
+	
+	                partition@0 {
+	                        label = "u-boot";
+	                        reg = <0x0 0x100000>;
+	                        read-only;
+	                };
+	
+	                partition@100000 {
+	                        label = "SC PID";
+	                        reg = <0x100000 0x100000>;
+	                        read-only;
+	                };
+	
+	                partition@200000 {
+	                        label = "linux";
+	                        reg = <0x200000 0x2000000>;
+	                };
+	
+	                partition@600000 {
+	                        label = "ubi";
+	                        reg = <0x600000 0x1c00000>;
+	                };
+	
+	                partition@2f00000 {
+	                        label = "nvram";
+	                        reg = <0x2f00000 0x200000>;
+	                };
+	
+	                factory: partition@2e00000 {
+	                        label = "factory";
+	                        reg = <0x2e00000 0x100000>;
+	                        read-only;
+	                };
+	
+	                partition@3100000 {
+	                        label = "ddwrt";
+	                        reg = <0x3100000 0x4f00000>;
+	                };
+	        };
 };
 
 &pcie {
@@ -95,34 +97,40 @@
 };
 
 &pcie0 {
-	wifi@0,0 {
-		compatible = "mediatek,mt76";
-		reg = <0x0 0 0 0 0>;
-		mediatek,mtd-eeprom = <&factory 0x8000>;
-		mediatek,disable_2ghz = <1>;
-		ieee80211-freq-limit = <5000000 6000000>;
+	mt76@0,0 {
+		reg = <0x0000 0 0 0 0>;
+		mediatek,mtd-eeprom = <&factory 0x0000>;
+		/*led {
+			led-sources = <3>;
+			led-active-low;
+		};*/
 	};
 };
 
-&pcie1 {
-	wifi@0,0 {
-		compatible = "mediatek,mt76";
-		reg = <0x0 0 0 0 0>;
-		mediatek,mtd-eeprom = <&factory 0x0>;
-		mediatek,disable_5ghz = <1>;
-		ieee80211-freq-limit = <2400000 2500000>;
-	};
+
+&raeth {
+	status = "okay";
+	mac-address = [00 00 00 00 00 00];
+	gmac1-support = "rgmii-1";
+	rgmii-mode-1 = "force-1000";
+	gmac2-support = "rgmii-2";
+	rgmii-mode-2 = "force-1000";
+	gmac2-phy-address = <0>;
+	gmac1_txq_num = <1>;
+	gmac1_txq_txd_num = <1024>;
+	gmac2_txq_num = <1>;
+	gmac2_txq_txd_num = <1024>;
+	num_rx_desc = <1024>;
 };
 
-&pinctrl {
-	state_default: pinctrl0 {
-		gpio {
-			ralink,group = "uart3", "uart2", "jtag", "wdt";
-			ralink,function = "gpio";
-		};
-	};
-};
 
 &xhci {
 	status = "okay";
+};
+
+&state_default {
+	gpio {
+		groups = "i2c", "jtag", "uart2", "uart3", "wdt";
+		function = "gpio";
+	};
 };
