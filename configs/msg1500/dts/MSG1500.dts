@@ -79,7 +79,7 @@
 			reg = <0x540000 0x200000>;
 		};
 
-		partition@540000 {
+		partition@740000 {
 			label = "ubi";
 			reg = <0x740000 0x7CC0000>;
 		};
