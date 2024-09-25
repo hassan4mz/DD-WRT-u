@@ -355,7 +355,7 @@ image:
 		ENTRY=`readelf -h $(TOP)/lzma-loader/mt7621/loader.elf | grep "Entry" | awk '{print $$4}'`; \
 		mkimage -A mips -O linux -C none -T kernel \
 			-a 80001000 -e $$ENTRY -n "DIR_878_MT7621AT" \
-			-d $(TOP)/lzma-loader/mt7621/loader.bin root-mt7621_$(BOARD).uimage; \
+			-d $(TOP)/lzma-loader/mt7621/loader.bin root-lzmaloader-wac124.uimage; \
 		dd if=root-mt7621_$(BOARD).uimage of=aligned-mt7621_$(BOARD).uimage bs=64k conv=sync; \
 		cat root.fs >> aligned-mt7621_$(BOARD).uimage; \
 		mv aligned-mt7621_$(BOARD).uimage dd-wrt-v3.0-r$(SVN_REVISION)-$(RPROFILE).bin
