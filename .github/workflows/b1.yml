@@ -33,6 +33,7 @@ jobs:
           mkdir hh
           cd hh
           wget https://breed.hackpascal.net/breed-ar9331.bin
+          ./breed-ar9331.bin breed.bin
           binwalk breed-ar9331.bin
           dd if=breed.bin of=boot bs=1 count=12828
           dd if=breed.bin of=packed_data.lzma bs=1 skip=12828
