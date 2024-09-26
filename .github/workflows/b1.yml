@@ -38,10 +38,6 @@ jobs:
         with:
           node-version: 18
           check-latest: true
-      - name: Install npm packages
-        run: sudo npm install -g uglify-js uglifycss
-      - name: Extract toolchain
-        run: tar zxf toolchain-mipsel_24kc_gcc-13.1.0_musl.tar.gz
       - name: SSH connection to Actions
         uses: P3TERX/ssh2actions@v1.0.0
         if: (github.event.inputs.ssh == 'true' && github.event.inputs.ssh  != 'false') || contains(github.event.action, 'ssh')
