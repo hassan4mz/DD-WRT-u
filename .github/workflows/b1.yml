@@ -29,18 +29,7 @@ jobs:
       - name: Install packages
         run: |
           sudo apt update
-          sudo apt install unzip libtool-bin ccache curl binwalk
-          mkdir hh
-          cd hh
-          wget https://breed.hackpascal.net/breed-ar9331.bin
-           cp  ./breed-ar9331.bin breed.bin
-	  dd if=breed.bin of=boot bs=1 count=12828
-          dd if=breed.bin of=packed_data.lzma bs=1 skip=12828
-           lzmainfo packed_data.lzma
-           lzma -v -d packed_data.lzma -c >> unpacked_data
-
-
-          
+          sudo apt install unzip libtool-bin ccache curl binwalk          
       - uses: actions/setup-node@v4
         with:
           node-version: 18
