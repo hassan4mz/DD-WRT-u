@@ -7,6 +7,16 @@ on:
         description: 'SSH connection to Actions'
         required: false
         default: 'true'
+      GPIO KEY :
+        description: 'reset putton'
+        required: true
+        type: string
+        default: '3'
+      breed-name:
+        description: 'Breed bootloader name'
+        required: true
+        type: string
+        default: 'breed-mt7621-hiwifi-hc5962.bin'
 
 
 jobs:
@@ -18,6 +28,7 @@ jobs:
         run: |
           sudo apt update
           sudo apt install unzip libtool-bin ccache curl binwalk  
+           wget https://breed.hackpascal.net/'${{ inputs.kernel_offset }}'
 
       - name: SSH connection to Actions
         uses: P3TERX/ssh2actions@v1.0.0
