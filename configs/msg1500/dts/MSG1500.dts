@@ -1,27 +1,26 @@
 /dts-v1/;
 
 #include "mt7621.dtsi"
-
 #include <dt-bindings/gpio/gpio.h>
-#include <dt-bindings/input/input.h>
+
 
 / {
-	compatible = "raisecom,msg1500", "ralink,mt7621-soc";
-	model = "Raisecom MSG1500";
+	compatible = "netgear,wac124", "mediatek,mt7621-soc";
+	model = "Netgear WAC124";
 
 	memory@0 {
 		device_type = "memory";
 		reg = <0x0 0x8000000>;
 	};
 	chosen {
-		bootargs = "console=ttyS0,115200";
+		bootargs = "console=ttyS0,57600";
 	};
 
 	leds: leds {
 		compatible = "gpio-leds";
 
 		wifi {
-			gpios = <&gpio0 13 GPIO_ACTIVE_LOW>;
+			gpios = <&gpio0 16 GPIO_ACTIVE_LOW>;
 			label = "green:wifi";
 			linux,default-trigger = "phy0tpt";
 		};
@@ -120,5 +119,3 @@
 &xhci {
 	status = "okay";
 };
-
-
