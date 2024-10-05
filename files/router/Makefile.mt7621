@@ -354,11 +354,31 @@ image:
 	@cd $(PLATFORMDIR); \
 		ENTRY=`readelf -h $(TOP)/lzma-loader/mt7621/loader.elf | grep "Entry" | awk '{print $$4}'`; \
 		mkimage -A mips -O linux -C none -T kernel \
-			-a 80001000 -e $$ENTRY -n "hassan_MT7621AT" \
-			-d $(TOP)/lzma-loader/mt7621/loader.bin root-lzmaloader-wac124.uimage; \
-		dd if=root-mt7621_$(BOARD).uimage of=aligned-mt7621_$(BOARD).uimage bs=64k  conv=sync; \
-		cat root.fs >> aligned-mt7621_$(BOARD).uimage; \
-		mv aligned-mt7621_$(BOARD).uimage dd-wrt-v3.0-r$(SVN_REVISION)-$(RPROFILE).bin
+			-a 80001000 -e $$ENTRY -n  "DD-WRT v24 Linux Kernel Image" \
+			-d $(TOP)/lzma-loader/mt7621/loader.bin root-mt7621_$(BOARD).uimage; \
+		dd if=/dev/zero bs=2048k count=1 > aligned-mt7621_$(BOARD).img; \
+		dd if=root-mt7621_$(BOARD).uimage >> aligned-mt7621_$(BOARD).img; \
+		dd if=aligned-mt7621_$(BOARD).img of=aligned-mt7621_$(BOARD).img.tmp bs=6144k count=1 conv=sync; \
+		mv aligned-mt7621_$(BOARD).img.tmp aligned-mt7621_$(BOARD).img; \
+		cp $(TOP)/tools/r6800/ubinize.cfg ./ ; \
+		cp root.fs root.squashfs; \
+		$(TOP)/tools/r6800/ubinize -v -m 2048 -p 128KiB -E 5 -o root.squashfs.ubi ubinize.cfg; \
+		cat root.squashfs.ubi >> aligned-mt7621_$(BOARD).img; \
+		dd if=aligned-mt7621_$(BOARD).img of=aligned-mt7621_$(BOARD).img.tmp bs=128k conv=sync; \
+		mv aligned-mt7621_$(BOARD).img.tmp aligned-mt7621_$(BOARD).img; \
+		$(TOP)/tools/r6800/mksercommfw -i aligned-mt7621_$(BOARD).img -b AYA -r A001 -v 0x0086 -f; \
+		dd if=aligned-mt7621_$(BOARD).img of=aligned-mt7621_$(BOARD).img.tmp bs=128 conv=sync; \
+		mv aligned-mt7621_$(BOARD).img.tmp aligned-mt7621_$(BOARD).bin; \
+		$(TOP)/tools/r6800/mksercommfw -i aligned-mt7621_$(BOARD).img -b AYA -r A001 -v 0x0086; \
+		dd if=root-mt7621_$(BOARD).uimage > aligned-mt7621_$(BOARD)-webflash.img; \
+		dd if=aligned-mt7621_$(BOARD)-webflash.img of=aligned-mt7621_$(BOARD)-webflash.img.tmp bs=4096k count=1 conv=sync; \
+		mv aligned-mt7621_$(BOARD)-webflash.img.tmp aligned-mt7621_$(BOARD)-webflash.img; \
+		cat root.squashfs.ubi >> aligned-mt7621_$(BOARD)-webflash.img; \
+		dd if=aligned-mt7621_$(BOARD)-webflash.img of=aligned-mt7621_$(BOARD)-webflash.img.tmp bs=128k conv=sync; \
+		mv aligned-mt7621_$(BOARD)-webflash.img.tmp aligned-mt7621_$(BOARD)-webflash.img; \
+		$(TOP)/tools/wrt160nl/trx -m 40000000 -o aligned-mt7621_$(BOARD)-webflash.bin aligned-mt7621_$(BOARD)-webflash.img; \
+		mv aligned-mt7621_$(BOARD)-webflash.bin dd-wrt-v3.0-r$(SVN_REVISION)-$(RPROFILE)-webflash.bin;\
+		mv aligned-mt7621_$(BOARD).bin dd-wrt-v3.0-r$(SVN_REVISION)-$(RPROFILE).bin
 
 include rules/all.mk
 
