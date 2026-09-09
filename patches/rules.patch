@@ -167,7 +167,7 @@ Index: src/router/rules/curl.mk
 ===================================================================
 --- src/router/rules/curl.mk	(revision 53494)
 +++ src/router/rules/curl.mk	(working copy)
-@@ -30,10 +30,12 @@
+@@ -30,10 +30,16 @@
  
  curl-configure: openssl zlib
  	cd curl && ./buildconf
@@ -179,9 +179,10 @@ Index: src/router/rules/curl.mk
  		--with-random=/dev/urandom --disable-shared --enable-static --with-ssl=$(TOP)/openssl \
  		--disable-ftp --disable-file --disable-ldap --disable-ldaps --disable-dict --disable-telnet --disable-pop3 --disable-imap --disable-smtp --disable-gopher --disable-manual --disable-rtsp --disable-proxy --disable-tftp --disable-pop3d --disable-imapd --disable-smtpd --disable-ftps --disable-telnetd --disable-smb --disable-mqtt --disable-ares --enable-ipv6 --disable-versioned-symbols
  
-+# Skip ca-bundle generation during build
++# Skip ca-bundle generation during build - directly build curl binary
 +curl: openssl zlib
-+	make -C curl/build/src
++	$(MAKE) -C curl/build/src
++	@echo "Skipping ca-bundle generation"
 +
  curl-clean:
  	make -C curl clean
