@@ -1,4 +1,4 @@
-name: build
+name: buildbin
 
 on: 
   workflow_dispatch:
