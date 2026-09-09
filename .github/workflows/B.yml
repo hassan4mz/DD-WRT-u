@@ -26,6 +26,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install packages
         run: |
+          sudo rm -rf /etc/apt/sources.list.d/google-chrome.list
           sudo apt clean
           sudo apt update
           sudo apt install unzip libtool-bin ccache curl binutils wget
