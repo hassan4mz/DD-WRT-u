@@ -26,9 +26,9 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install packages
         run: |
+          sudo apt clean
           sudo apt update
-          sudo apt install unzip libtool-bin ccache curl binwalk  
-           wget https://breed.hackpascal.net/'${{ inputs.kernel_offset }}'
+          sudo apt install unzip libtool-bin ccache curl binutils wget
 
       - name: SSH connection to Actions
         uses: P3TERX/ssh2actions@v1.0.0

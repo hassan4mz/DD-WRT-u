@@ -21,6 +21,7 @@ jobs:
           key: ${{ matrix.profile }}
       - name: Install packages
         run: |
+          sudo apt clean
           sudo apt update
           sudo apt install unzip libtool-bin ccache curl cmake gperf gawk flex bison nano xxd \
             fakeroot kmod cpio bc zip git python3-docutils gettext gengetopt gtk-doc-tools \
