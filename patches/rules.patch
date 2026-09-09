@@ -163,3 +163,25 @@ Index: src/router/rules/util-linux.mk
  
  util-linux-install:
  	make -C util-linux install DESTDIR=$(INSTALLDIR)/util-linux
+Index: src/router/rules/curl.mk
+===================================================================
+--- src/router/rules/curl.mk	(revision 53494)
++++ src/router/rules/curl.mk	(working copy)
+@@ -30,10 +30,12 @@
+ 
+ curl-configure: openssl zlib
+ 	cd curl && ./buildconf
+-	cd curl && ./configure --disable-debug --enable-optimize --prefix=/usr --libdir=/usr/lib \
++	cd curl && ./configure --without-ca-bundle --without-ca-path --disable-debug --enable-optimize --prefix=/usr --libdir=/usr/lib \
+ 		--host=$(ARCH)-linux-uclibc --target=$(ARCH)-linux CC="ccache $(ARCH)-linux-uclibc-gcc" \
+ 		CFLAGS="$(COPTS) $(MIPS16_OPT) -ffunction-sections -fdata-sections" \
+ 		LDFLAGS="-L$(TOP)/openssl -L$(TOP)/zlib -Wl,-rpath-link,$(TOP)/openssl -Wl,--gc-sections" \
+ 		--with-random=/dev/urandom --disable-shared --enable-static --with-ssl=$(TOP)/openssl \
+ 		--disable-ftp --disable-file --disable-ldap --disable-ldaps --disable-dict --disable-telnet --disable-pop3 --disable-imap --disable-smtp --disable-gopher --disable-manual --disable-rtsp --disable-proxy --disable-tftp --disable-pop3d --disable-imapd --disable-smtpd --disable-ftps --disable-telnetd --disable-smb --disable-mqtt --disable-ares --enable-ipv6 --disable-versioned-symbols
+ 
++# Skip ca-bundle generation during build
++curl: openssl zlib
++	make -C curl/build/src
++
+ curl-clean:
+ 	make -C curl clean
